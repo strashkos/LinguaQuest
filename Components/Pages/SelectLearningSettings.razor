@@ -1,0 +1,94 @@
+@attribute [Authorize]
+@page "/settings"
+@inject IUserLearningSettingsService SettingsService
+@inject ICurrentUserService CurrentUserService
+
+<section class="page-card">
+	<h2>Learning settings</h2>
+	<p class="muted">Ukrainian is fixed as the source language. Choose the target language and level.</p>
+
+	<div class="form-grid">
+		<label>
+			Source language
+			<input class="search-input" value="Ukrainian" disabled />
+		</label>
+		<label>
+			Target language
+			<select class="search-input" value="@Settings.TargetLanguage" @onchange="HandleTargetLanguageChanged">
+				<option value="@LearningLanguage.English">English</option>
+				<option value="@LearningLanguage.German">German</option>
+			</select>
+		</label>
+		<label>
+			Level
+			<select class="search-input" value="@Settings.Level" @onchange="HandleLevelChanged">
+				@foreach (var item in Enum.GetValues<LearningLevel>())
+				{
+					<option value="@item">@GetLevelLabel(item)</option>
+				}
+			</select>
+		</label>
+		<label>
+			Words per session
+			<input class="search-input" type="number" min="1" max="20" value="@Settings.WordsPerSession" @oninput="HandleSessionSizeChanged" />
+		</label>
+	</div>
+
+	<button class="primary-button" type="button" @onclick="SaveAsync">Save settings</button>
+
+	@if (!string.IsNullOrWhiteSpace(Status))
+	{
+		<p class="status-text">@Status</p>
+	}
+</section>
+
+@code {
+	private LearningSettingsViewModel Settings = new();
+	private string? Status;
+	private string? UserId;
+
+	protected override async Task OnInitializedAsync()
+	{
+		UserId = await CurrentUserService.GetUserIdAsync();
+		var current = await SettingsService.GetAsync(UserId ?? string.Empty);
+		Settings = LearningSettingsViewModel.FromModel(current);
+	}
+
+	private async Task SaveAsync()
+	{
+		await SettingsService.SaveAsync(Settings.ToModel(UserId ?? string.Empty));
+		Status = "Settings saved.";
+	}
+
+	private void HandleSourceLanguageChanged(ChangeEventArgs args)
+	{
+		Settings.SourceLanguage = LearningLanguage.Ukrainian;
+	}
+
+	private void HandleTargetLanguageChanged(ChangeEventArgs args)
+	{
+		Settings.TargetLanguage = Enum.Parse<LearningLanguage>(args.Value?.ToString() ?? nameof(LearningLanguage.German));
+	}
+
+	private void HandleLevelChanged(ChangeEventArgs args)
+	{
+		Settings.Level = Enum.Parse<LearningLevel>(args.Value?.ToString() ?? nameof(LearningLevel.Level1));
+	}
+
+	private void HandleSessionSizeChanged(ChangeEventArgs args)
+	{
+		if (int.TryParse(args.Value?.ToString(), out var value))
+		{
+			Settings.WordsPerSession = value;
+		}
+	}
+
+	private static string GetLevelLabel(LearningLevel level) => level switch
+	{
+		LearningLevel.Level1 => "1 - alphabet and basics",
+		LearningLevel.Level2 => "2 - core words",
+		LearningLevel.Level3 => "3 - simple phrases",
+		LearningLevel.Level4 => "4 - extended vocabulary",
+		_ => level.ToString()
+	};
+}

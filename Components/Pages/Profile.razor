@@ -1,0 +1,62 @@
+@attribute [Authorize]
+@page "/profile"
+@inject IUserLearningSettingsService SettingsService
+@inject IProgressService ProgressService
+@inject ICurrentUserService CurrentUserService
+
+<section class="page-card">
+    <h2>Profile</h2>
+    <p class="muted">A simple local profile for the demo user.</p>
+
+    <div class="profile-grid">
+        <div>
+            <strong>User:</strong>
+            <p>@(DisplayName ?? "Learner")</p>
+        </div>
+        <div>
+            <strong>Email:</strong>
+            <p>demo@linguaquest.local</p>
+        </div>
+        <div>
+            <strong>Target language:</strong>
+            <p>@Settings.TargetLanguage</p>
+        </div>
+        <div>
+            <strong>Current level:</strong>
+            <p>@Settings.Level</p>
+        </div>
+        <div>
+            <strong>Session size:</strong>
+            <p>@Settings.WordsPerSession words</p>
+        </div>
+    </div>
+
+    <h3>Progress snapshot</h3>
+    @if (Progress is null)
+    {
+        <p>Loading profile data...</p>
+    }
+    else if (Progress.Count == 0)
+    {
+        <p>No attempts yet. Play a round to start collecting progress.</p>
+    }
+    else
+    {
+        <p>Accuracy: @ProgressCalculator.GetAccuracy(Progress).ToString("0")%</p>
+        <p>Learned words: @Progress.Count(ProgressCalculator.IsLearned)</p>
+    }
+</section>
+
+@code {
+    private UserLearningSettings Settings = new();
+    private IReadOnlyList<DictionaryProgress>? Progress;
+    private string? DisplayName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        DisplayName = await CurrentUserService.GetDisplayNameAsync();
+        var userId = await CurrentUserService.GetUserIdAsync();
+        Settings = await SettingsService.GetAsync(userId ?? string.Empty);
+        Progress = await ProgressService.GetProgressAsync(userId ?? string.Empty);
+    }
+}

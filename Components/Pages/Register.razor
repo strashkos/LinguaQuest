@@ -1,0 +1,79 @@
+@attribute [AllowAnonymous]
+@page "/register"
+
+<section class="auth-shell page-card">
+    <div class="auth-copy">
+        <p class="eyebrow">LinguaQuest</p>
+        <h1>Create account</h1>
+        <p class="muted">Choose your target language and level, then start from the right word set.</p>
+        <p><a href="/login">Already have an account?</a></p>
+    </div>
+
+    <form class="auth-form" method="post" action="/auth/register">
+        <input type="hidden" name="returnUrl" value="@ReturnUrl" />
+
+        <label>
+            Username
+            <input class="search-input" name="UserName" autocomplete="username" />
+        </label>
+
+        <label>
+            Display name
+            <input class="search-input" name="DisplayName" autocomplete="name" />
+        </label>
+
+        <label>
+            Email
+            <input class="search-input" type="email" name="Email" autocomplete="email" />
+        </label>
+
+        <label>
+            Password
+            <input class="search-input" type="password" name="Password" autocomplete="new-password" />
+        </label>
+
+        <label>
+            Confirm password
+            <input class="search-input" type="password" name="ConfirmPassword" autocomplete="new-password" />
+        </label>
+
+        <label>
+            Target language
+            <select class="search-input" name="TargetLanguage">
+                <option value="@LearningLanguage.English">English</option>
+                <option value="@LearningLanguage.German">German</option>
+            </select>
+        </label>
+
+        <label>
+            Level
+            <select class="search-input" name="Level">
+                @foreach (var item in Enum.GetValues<LearningLevel>())
+                {
+                    <option value="@item">@GetLevelLabel(item)</option>
+                }
+            </select>
+        </label>
+
+        @if (!string.IsNullOrWhiteSpace(Error))
+        {
+            <p class="status-text">@Error</p>
+        }
+
+        <button class="primary-button" type="submit">Create account</button>
+    </form>
+</section>
+
+@code {
+    [SupplyParameterFromQuery] public string? Error { get; set; }
+    [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
+
+    private static string GetLevelLabel(LearningLevel level) => level switch
+    {
+        LearningLevel.Level1 => "1 - alphabet and basics",
+        LearningLevel.Level2 => "2 - core words",
+        LearningLevel.Level3 => "3 - simple phrases",
+        LearningLevel.Level4 => "4 - extended vocabulary",
+        _ => level.ToString()
+    };
+}

@@ -1,0 +1,13 @@
+<div class="choice-group">
+    @foreach (var item in Enum.GetValues<LearningLanguage>())
+    {
+        <button type="button" class="choice-button @(item == Selected ? "is-selected" : string.Empty)" @onclick="() => SelectedChanged.InvokeAsync(item)">
+            @item
+        </button>
+    }
+</div>
+
+@code {
+    [Parameter] public LearningLanguage Selected { get; set; }
+    [Parameter] public EventCallback<LearningLanguage> SelectedChanged { get; set; }
+}

@@ -1,0 +1,78 @@
+@attribute [Authorize]
+@page "/dictionary"
+@inject IWordService WordService
+@inject IUserLearningSettingsService SettingsService
+@inject ICurrentUserService CurrentUserService
+
+<section class="page-card">
+	<h2>Dictionary</h2>
+		<p class="muted">Search the words for @Settings.TargetLanguage at @Settings.Level.</p>
+
+	<input class="search-input" placeholder="Search words, categories, or hints" value="@Search" @oninput="HandleInput" />
+
+	@if (Items is null)
+	{
+		<p>Loading dictionary...</p>
+	}
+	else if (Items.Count == 0)
+	{
+		<p>No words match your search.</p>
+	}
+	else
+	{
+		<div class="dictionary-list">
+			@foreach (var item in Items)
+			{
+				<article class="dictionary-item">
+					<h3>@item.SourceText → @item.TargetText</h3>
+					<p>@item.Category | @item.Level</p>
+					<small>@item.Hint</small>
+				</article>
+			}
+		</div>
+	}
+</section>
+
+@code {
+	private string Search = string.Empty;
+	private IReadOnlyList<DictionaryItemViewModel>? Items;
+	private LearningSettingsViewModel Settings = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		var userId = await CurrentUserService.GetUserIdAsync();
+		var current = await SettingsService.GetAsync(userId ?? string.Empty);
+		Settings = LearningSettingsViewModel.FromModel(current);
+		await RefreshAsync();
+	}
+
+	private async Task HandleInput(ChangeEventArgs args)
+	{
+		Search = args.Value?.ToString() ?? string.Empty;
+		await RefreshAsync();
+	}
+
+	private async Task RefreshAsync()
+	{
+		var words = await WordService.GetWordsAsync(LearningLanguage.Ukrainian, Settings.TargetLanguage, Settings.Level);
+		var term = Search.Trim();
+
+		Items = words
+			.Where(item =>
+				string.IsNullOrWhiteSpace(term) ||
+				item.SourceText.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+				item.TargetText.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+				item.Category.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+				item.Hint.Contains(term, StringComparison.OrdinalIgnoreCase))
+			.Select(item => new DictionaryItemViewModel
+			{
+				Id = item.Id,
+				SourceText = item.SourceText,
+				TargetText = item.TargetText,
+				Category = item.Category,
+				Hint = item.Hint,
+				Level = item.Level
+			})
+			.ToList();
+	}
+}

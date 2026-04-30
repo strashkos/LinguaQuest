@@ -1,0 +1,28 @@
+<div class="brand-block">
+    <div class="brand-mark">LQ</div>
+    <div>
+        <div class="brand-title">LinguaQuest</div>
+        <div class="brand-subtitle">Language learning game</div>
+    </div>
+</div>
+
+<nav class="nav-list">
+    <NavLink href="/" Match="NavLinkMatch.All">Home</NavLink>
+
+    <AuthorizeView>
+        <Authorized>
+            <NavLink href="/game">Game</NavLink>
+            <NavLink href="/dictionary">Dictionary</NavLink>
+            <NavLink href="/settings">Settings</NavLink>
+            <NavLink href="/profile">Profile</NavLink>
+            <NavLink href="/statistics">Statistics</NavLink>
+            <form method="post" action="/auth/logout">
+                <button type="submit" class="nav-link-button">Logout</button>
+            </form>
+        </Authorized>
+        <NotAuthorized>
+            <NavLink href="/login">Login</NavLink>
+            <NavLink href="/register">Register</NavLink>
+        </NotAuthorized>
+    </AuthorizeView>
+</nav>

@@ -1,0 +1,17 @@
+<section class="page-card game-card">
+    @if (!string.IsNullOrWhiteSpace(Title))
+    {
+        <h2>@Title</h2>
+    }
+    @if (!string.IsNullOrWhiteSpace(Subtitle))
+    {
+        <p class="muted">@Subtitle</p>
+    }
+    <div>@ChildContent</div>
+</section>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

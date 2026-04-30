@@ -1,0 +1,10 @@
+<span class="progress-badge @Tone">
+    <strong>@Value</strong>
+    <span>@Label</span>
+</span>
+
+@code {
+    [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public string Value { get; set; } = string.Empty;
+    [Parameter] public string Tone { get; set; } = "soft";
+}

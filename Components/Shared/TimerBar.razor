@@ -1,0 +1,17 @@
+<div class="timer-shell">
+    <div class="timer-info">
+        <span>@Label</span>
+        <strong>@RemainingSeconds / @TotalSeconds s</strong>
+    </div>
+    <div class="timer-track">
+        <div class="timer-fill" style="width: @Percent%"></div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Timer";
+    [Parameter] public int RemainingSeconds { get; set; }
+    [Parameter] public int TotalSeconds { get; set; } = 60;
+
+    private int Percent => TotalSeconds <= 0 ? 0 : (int)Math.Clamp(RemainingSeconds * 100.0 / TotalSeconds, 0, 100);
+}

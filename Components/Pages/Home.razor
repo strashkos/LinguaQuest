@@ -1,0 +1,38 @@
+@page "/"
+@inject NavigationManager Navigation
+
+<section class="hero page-card">
+	<div>
+		<p class="eyebrow">LinguaQuest</p>
+		<h1>Learn words by playing.</h1>
+		<p class="lead">Small practice rounds, an adaptive dictionary, and a clean learning flow for English and German.</p>
+		<div class="hero-actions">
+			<button class="primary-button" @onclick='() => Navigation.NavigateTo("/game")'>Start game</button>
+			<button class="ghost-button" @onclick='() => Navigation.NavigateTo("/settings")'>Choose settings</button>
+		</div>
+	</div>
+
+	<div class="hero-stats">
+		<div class="progress-badge"><strong>Quick practice</strong><span>Mode</span></div>
+		<div class="progress-badge accent"><strong>EN / DE</strong><span>Languages</span></div>
+		<div class="progress-badge warm"><strong>Vocabulary</strong><span>Focus</span></div>
+	</div>
+</section>
+
+<section class="grid-cards">
+	<article class="page-card">
+		<h2>Game</h2>
+		<p class="muted">Answer quick rounds and see your progress build up.</p>
+		<p>Train by translating words with a small set of answer choices.</p>
+	</article>
+	<article class="page-card">
+		<h2>Dictionary</h2>
+		<p class="muted">Filter the current word set by search term.</p>
+		<p>Browse all the seeded words and use them as a reference while studying.</p>
+	</article>
+	<article class="page-card">
+		<h2>Settings</h2>
+		<p class="muted">Choose the language pair and learning level.</p>
+		<p>Pick the study mode that fits the lesson you want to practice next.</p>
+	</article>
+</section>

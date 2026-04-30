@@ -1,0 +1,37 @@
+@attribute [AllowAnonymous]
+@page "/login"
+
+<section class="auth-shell page-card">
+    <div class="auth-copy">
+        <p class="eyebrow">LinguaQuest</p>
+        <h1>Sign in</h1>
+        <p class="muted">Continue your progress and keep learning with your saved account.</p>
+        <p><a href="/register">Create a new account</a></p>
+    </div>
+
+    <form class="auth-form" method="post" action="/auth/login">
+        <input type="hidden" name="returnUrl" value="@ReturnUrl" />
+
+        <label>
+            Username or email
+            <input class="search-input" name="UserNameOrEmail" autocomplete="username" />
+        </label>
+
+        <label>
+            Password
+            <input class="search-input" type="password" name="Password" autocomplete="current-password" />
+        </label>
+
+        @if (!string.IsNullOrWhiteSpace(Error))
+        {
+            <p class="status-text">@Error</p>
+        }
+
+        <button class="primary-button" type="submit">Sign in</button>
+    </form>
+</section>
+
+@code {
+    [SupplyParameterFromQuery] public string? Error { get; set; }
+    [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
+}

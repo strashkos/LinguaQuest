@@ -1,0 +1,170 @@
+@implements IDisposable
+@attribute [Authorize]
+@page "/game"
+@inject IGameService GameService
+@inject IProgressService ProgressService
+@inject IUserLearningSettingsService SettingsService
+@inject ICurrentUserService CurrentUserService
+@inject IGameTimer Timer
+
+<section class="page-card game-card">
+	<div class="page-head">
+		<div>
+			<h2>Game room</h2>
+			<p class="muted">Pick the right translation and keep practicing.</p>
+		</div>
+		<div class="game-controls">
+			<label class="inline-control">
+				Mode
+				<select class="search-input compact" @bind="SelectedMode">
+					<option value="@GameModeType.QuickFind">Quick find</option>
+					<option value="@GameModeType.WordOnMind">Word on mind</option>
+				</select>
+			</label>
+			<label class="inline-control toggle">
+				<input type="checkbox" @bind="UseTimer" />
+				<span>Timer</span>
+			</label>
+			<button class="ghost-button" type="button" @onclick="StartRoundAsync">New round</button>
+		</div>
+	</div>
+
+	@if (UseTimer)
+	{
+		<div class="timer-shell">
+			<div class="timer-info">
+				<span>Practice time</span>
+				<strong>@Timer.RemainingSeconds / @Timer.TotalSeconds s</strong>
+			</div>
+			<div class="timer-track">
+				<div class="timer-fill" style="width: @(Timer.TotalSeconds == 0 ? 0 : Timer.RemainingSeconds * 100 / Timer.TotalSeconds)%"></div>
+			</div>
+		</div>
+	}
+
+	@if (Loading)
+	{
+		<p>Loading a new round...</p>
+	}
+	else if (CurrentTask is not null)
+	{
+		<div class="game-prompt">
+			<span class="floating-word">@CurrentTask.Mode</span>
+			<h3>@CurrentTask.Prompt</h3>
+			<p class="muted">@CurrentTask.Hint</p>
+		</div>
+
+		<div class="answers-grid">
+			@foreach (var option in CurrentTask.Options)
+			{
+				<button type="button" class="answer-button @(Result is null ? string.Empty : option == CurrentTask.CorrectAnswer ? "correct" : option == LastAnswer ? "wrong" : string.Empty)" @onclick="() => SubmitAnswerAsync(option)">
+					@option
+				</button>
+			}
+		</div>
+
+		@if (Result is not null)
+		{
+			<div class="result-box @(Result.IsCorrect ? "is-correct" : "is-wrong")">
+				<strong>@Result.Message</strong>
+				<p>@Result.Explanation</p>
+				<button class="primary-button" @onclick="StartRoundAsync">Next round</button>
+			</div>
+		}
+	}
+</section>
+
+@code {
+	private string? UserId;
+	private GameTaskViewModel? CurrentTask;
+	private GameResultViewModel? Result;
+	private string? LastAnswer;
+	private bool Loading = true;
+	private bool UseTimer = true;
+	private GameModeType SelectedMode = GameModeType.QuickFind;
+	private CancellationTokenSource? _timerCts;
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		UserId = await CurrentUserService.GetUserIdAsync();
+		await StartRoundAsync();
+	}
+
+	private async Task StartRoundAsync()
+	{
+		_timerCts?.Cancel();
+		_timerCts?.Dispose();
+		_timerCts = new CancellationTokenSource();
+
+		Loading = true;
+		Result = null;
+		LastAnswer = null;
+
+		var userId = UserId ?? "";
+		var settings = await SettingsService.GetAsync(userId);
+		CurrentTask = await GameService.CreateTaskAsync(LearningLanguage.Ukrainian, settings.TargetLanguage, settings.Level, SelectedMode);
+
+		if (UseTimer)
+		{
+			Timer.Start(30);
+			_ = RunTimerAsync(_timerCts.Token);
+		}
+		else
+		{
+			Timer.Stop();
+		}
+
+		Loading = false;
+		StateHasChanged();
+	}
+
+	private async Task SubmitAnswerAsync(string answer)
+	{
+		if (CurrentTask is null || Result is not null || (UseTimer && Timer.RemainingSeconds <= 0))
+		{
+			return;
+		}
+
+		LastAnswer = answer;
+		Result = await GameService.EvaluateAsync(CurrentTask, answer);
+		await ProgressService.RegisterAttemptAsync(UserId ?? string.Empty, CurrentTask.WordPairId, Result.IsCorrect);
+		Timer.Stop();
+		StateHasChanged();
+	}
+
+	private async Task RunTimerAsync(CancellationToken cancellationToken)
+	{
+		try
+		{
+			while (!cancellationToken.IsCancellationRequested && Timer.IsRunning)
+			{
+				await Task.Delay(1000, cancellationToken);
+				Timer.Tick();
+				await InvokeAsync(StateHasChanged);
+
+				if (Timer.RemainingSeconds <= 0 && Result is null)
+				{
+					Result = new GameResultViewModel
+					{
+						IsCorrect = false,
+						Message = "Time is up.",
+						Explanation = CurrentTask?.Explanation ?? string.Empty,
+						CorrectAnswer = CurrentTask?.CorrectAnswer ?? string.Empty
+					};
+					await ProgressService.RegisterAttemptAsync(UserId ?? string.Empty, CurrentTask?.WordPairId ?? 0, false);
+					await InvokeAsync(StateHasChanged);
+				}
+			}
+		}
+		catch (OperationCanceledException)
+		{
+		}
+	}
+
+	public void Dispose()
+	{
+		_timerCts?.Cancel();
+		_timerCts?.Dispose();
+	}
+}

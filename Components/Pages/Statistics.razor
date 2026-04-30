@@ -1,0 +1,51 @@
+@attribute [Authorize]
+@page "/statistics"
+@inject IProgressService ProgressService
+@inject ICurrentUserService CurrentUserService
+
+<section class="page-card">
+    <h2>Statistics</h2>
+    <p class="muted">Track the current demo progress.</p>
+
+    @if (Progress is null)
+    {
+        <p>Loading statistics...</p>
+    }
+    else if (Progress.Count == 0)
+    {
+        <p>No attempts yet. Start a game to create your first statistics.</p>
+    }
+    else
+    {
+        <div class="stats-summary">
+            <div class="progress-badge"><strong>@Progress.Count</strong><span>Cards</span></div>
+            <div class="progress-badge accent"><strong>@Attempts</strong><span>Attempts</span></div>
+            <div class="progress-badge warm"><strong>@Accuracy.ToString("0")%</strong><span>Accuracy</span></div>
+        </div>
+
+        <div class="dictionary-list">
+            @foreach (var item in Progress)
+            {
+                <article class="dictionary-item">
+                    <h3>@item.WordPair?.SourceText</h3>
+                    <p>Attempts: @item.Attempts | Correct: @item.CorrectAttempts | Learned: @(ProgressCalculator.IsLearned(item) ? "Yes" : "No")</p>
+                    <small>First seen: @item.FirstSeenUtc.ToLocalTime()</small><br />
+                    <small>Last seen: @item.LastSeenUtc.ToLocalTime()</small>
+                </article>
+            }
+        </div>
+    }
+</section>
+
+@code {
+    private IReadOnlyList<DictionaryProgress>? Progress;
+
+    private int Attempts => Progress?.Sum(item => item.Attempts) ?? 0;
+    private double Accuracy => ProgressCalculator.GetAccuracy(Progress ?? Array.Empty<DictionaryProgress>());
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userId = await CurrentUserService.GetUserIdAsync();
+        Progress = await ProgressService.GetProgressAsync(userId ?? string.Empty);
+    }
+}

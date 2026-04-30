@@ -1,0 +1,8 @@
+E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\LinguaQuest.Web.csproj.AssemblyReference.cache
+E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\rpswa.dswa.cache.json
+E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\LinguaQuest.Web.GeneratedMSBuildEditorConfig.editorconfig
+E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\LinguaQuest.Web.AssemblyInfoInputs.cache
+E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\LinguaQuest.Web.AssemblyInfo.cs
+E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\LinguaQuest.Web.csproj.CoreCompileInputs.cache
+E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\LinguaQuest.Web.MvcApplicationPartsAssemblyInfo.cache
+E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\LinguaQuest.Web.sourcelink.json
