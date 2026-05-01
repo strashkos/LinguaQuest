@@ -4,7 +4,5 @@ public enum LearningLanguage
 {
     Ukrainian,
     English,
-    German,
-    Spanish,
-    French
+    German
 }

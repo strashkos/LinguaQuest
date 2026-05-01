@@ -1,26 +1,52 @@
 :root {
-    color-scheme: dark;
-    font-family: Inter, "Segoe UI", sans-serif;
-    background: #081120;
+    --bg-primary: #0a1118;
+    --bg-secondary: #161b22;
+    --bg-tertiary: #21262d;
+    --text-primary: #f0f6fc;
+    --text-secondary: #c9d1d9;
+    --text-muted: #8b949e;
+    --accent-primary: #d9468e;
+    --accent-secondary: #8df0ff;
+    --accent-success: #3fb950;
+    --accent-error: #f85149;
+    --border-primary: rgba(255, 255, 255, 0.12);
+    --border-secondary: rgba(255, 255, 255, 0.08);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+html[data-theme="light"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f6f8fa;
+    --bg-tertiary: #eaeef2;
+    --text-primary: #0d1117;
+    --text-secondary: #424242;
+    --text-muted: #757575;
+    --border-primary: rgba(0, 0, 0, 0.1);
+    --border-secondary: rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 html,
 body {
     margin: 0;
     min-height: 100%;
-    background: #081120;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: Inter, "Segoe UI", system-ui, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body {
-    color: #f5f7fb;
+    color: var(--text-primary);
 }
 
 .page-card {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
     border-radius: 1.4rem;
     padding: 1.5rem;
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+    box-shadow: var(--shadow-md);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .auth-shell {

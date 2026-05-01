@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: linguaquest
+    env: docker
+    autoDeploy: true
+    healthCheckPath: /

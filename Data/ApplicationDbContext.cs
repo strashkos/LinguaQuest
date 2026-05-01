@@ -10,7 +10,11 @@ public sealed class ApplicationDbContext
 		var connectionString = configuration["MongoDb:ConnectionString"] ?? "mongodb://localhost:27017";
 		var databaseName = configuration["MongoDb:DatabaseName"] ?? "LinguaQuestDb";
 
-		var client = new MongoClient(connectionString);
+		var settings = MongoClientSettings.FromConnectionString(connectionString);
+		settings.ServerSelectionTimeout = TimeSpan.FromSeconds(5);
+		settings.ConnectTimeout = TimeSpan.FromSeconds(5);
+
+		var client = new MongoClient(settings);
 		Database = client.GetDatabase(databaseName);
 	}
 

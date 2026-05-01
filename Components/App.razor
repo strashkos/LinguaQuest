@@ -7,12 +7,14 @@
     <link rel="stylesheet" href="css/app.css" />
     <link rel="stylesheet" href="css/game.css" />
     <link rel="stylesheet" href="css/animations.css" />
+        <link rel="stylesheet" href="css/theme.css" />
     <HeadOutlet />
 </head>
 <body>
     <CascadingAuthenticationState>
-        <Routes @rendermode="InteractiveServer" />
+        <Routes @rendermode="new InteractiveServerRenderMode()" />
     </CascadingAuthenticationState>
     <script src="js/gameAnimations.js"></script>
+    <script src="js/theme.js"></script>
 </body>
 </html>
