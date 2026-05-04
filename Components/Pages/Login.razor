@@ -1,34 +1,54 @@
 @attribute [AllowAnonymous]
 @page "/login"
 
-<section class="auth-shell page-card">
-    <div class="auth-copy">
-        <p class="eyebrow">LinguaQuest</p>
-        <h1>Sign in</h1>
-        <p class="muted">Continue your progress and keep learning with your saved account.</p>
-        <p><a href="/register">Create a new account</a></p>
+<section class="auth-page-shell">
+    <div class="auth-visual">
+        <div class="page-card glass-card">
+            <p class="eyebrow">LinguaQuest</p>
+            <h1>Повернись до свого прогресу.</h1>
+            <p class="lead">Продовжуй збережений шлях і тримай вивчені слова прив’язаними до акаунта.</p>
+        </div>
+
+        <div class="glass-grid">
+            <div class="page-card glass-card">
+                <p class="eyebrow">Швидко</p>
+                <strong>Миттєвий вхід</strong>
+                <p class="muted">Одна форма без зайвого шуму.</p>
+            </div>
+            <div class="page-card glass-card">
+                <p class="eyebrow">Збереження</p>
+                <strong>Прогрес іде з тобою</strong>
+                <p class="muted">Слова та налаштування зберігаються у профілі.</p>
+            </div>
+        </div>
     </div>
 
-    <form class="auth-form" method="post" action="/auth/login">
-        <input type="hidden" name="returnUrl" value="@ReturnUrl" />
+    <div class="page-card glass-card auth-form-panel">
+        <p class="eyebrow">Вхід</p>
+        <h1>Продовжити навчання</h1>
+        <p class="muted"><a href="/register">Створи новий акаунт</a> або використай модалку входу в хедері.</p>
 
-        <label>
-            Username or email
-            <input class="search-input" name="UserNameOrEmail" autocomplete="username" />
-        </label>
+        <form class="auth-form" method="post" action="/auth/login">
+            <input type="hidden" name="returnUrl" value="@ReturnUrl" />
 
-        <label>
-            Password
-            <input class="search-input" type="password" name="Password" autocomplete="current-password" />
-        </label>
+            <label>
+                Логін або email
+                <input class="search-input" name="UserNameOrEmail" autocomplete="username" />
+            </label>
 
-        @if (!string.IsNullOrWhiteSpace(Error))
-        {
-            <p class="status-text">@Error</p>
-        }
+            <label>
+                Пароль
+                <input class="search-input" type="password" name="Password" autocomplete="current-password" />
+            </label>
 
-        <button class="primary-button" type="submit">Sign in</button>
-    </form>
+            @if (!string.IsNullOrWhiteSpace(Error))
+            {
+                <p class="status-text">@Error</p>
+            }
+
+            <button class="primary-button wide-button" type="submit">Увійти</button>
+        </form>
+    </div>
 </section>
 
 @code {

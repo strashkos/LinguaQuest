@@ -38,6 +38,8 @@ builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IUserLearningSettingsService, UserLearningSettingsService>();
 builder.Services.AddScoped<IGameMode, QuickFindMode>();
 builder.Services.AddScoped<IGameMode, WordOnMindMode>();
+builder.Services.AddScoped<IGameMode, SentenceChoiceMode>();
+builder.Services.AddScoped<IGameMode, SentenceComposeMode>();
 builder.Services.AddScoped<IGameTimer, CountdownGameTimer>();
 
 var app = builder.Build();

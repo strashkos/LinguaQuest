@@ -9,13 +9,15 @@ public class LearningSettingsViewModel
     public LearningLanguage TargetLanguage { get; set; } = LearningLanguage.English;
     public LearningLevel Level { get; set; } = LearningLevel.Level1;
     public int WordsPerSession { get; set; } = 5;
+    public string ThemePreference { get; set; } = "dark";
 
     public static LearningSettingsViewModel FromModel(UserLearningSettings model) => new()
     {
         SourceLanguage = model.SourceLanguage,
         TargetLanguage = model.TargetLanguage,
         Level = model.Level,
-        WordsPerSession = model.WordsPerSession
+        WordsPerSession = model.WordsPerSession,
+        ThemePreference = model.ThemePreference
     };
 
     public UserLearningSettings ToModel(string userId) => new()
@@ -24,6 +26,7 @@ public class LearningSettingsViewModel
         SourceLanguage = SourceLanguage,
         TargetLanguage = TargetLanguage,
         Level = Level,
-        WordsPerSession = WordsPerSession
+        WordsPerSession = WordsPerSession,
+        ThemePreference = ThemePreference
     };
 }

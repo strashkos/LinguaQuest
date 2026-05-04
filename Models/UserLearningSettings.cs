@@ -14,4 +14,5 @@ public class UserLearningSettings
 	public LearningLanguage TargetLanguage { get; set; } = LearningLanguage.English;
 	public LearningLevel Level { get; set; } = LearningLevel.Level1;
 	public int WordsPerSession { get; set; } = 5;
+	public string ThemePreference { get; set; } = "dark";
 }

@@ -1,27 +1,26 @@
 using LinguaQuest.Web.Enums;
 using LinguaQuest.Web.Models;
 using LinguaQuest.Web.Services.Interfaces;
-using LinguaQuest.Web.ViewModels;
 
 namespace LinguaQuest.Web.Services.GameModes;
 
-public class QuickFindMode : GameModeBase
+public class SentenceChoiceMode : GameModeBase
 {
-    public QuickFindMode(IWordService wordService)
+    public SentenceChoiceMode(IWordService wordService)
         : base(wordService)
     {
     }
 
-    public override GameModeType Mode => GameModeType.QuickFind;
+    public override GameModeType Mode => GameModeType.SentenceChoice;
 
     protected override string BuildPrompt(WordPair word)
     {
-        return $"Оберіть переклад для «{word.SourceText}»";
+        return $"Оберіть слово для речення: {SentenceTemplateBuilder.BuildPrompt(word)}";
     }
 
     protected override string BuildExplanation(WordPair word)
     {
-        return $"{word.SourceText} означає {word.TargetText}.";
+        return $"Слово '{word.TargetText}' підходить до цього речення.";
     }
 
     protected override async Task<IReadOnlyList<string>> BuildOptionsAsync(
@@ -34,4 +33,5 @@ public class QuickFindMode : GameModeBase
         var words = await GetWordsAsync(sourceLanguage, targetLanguage, level, cancellationToken);
         return ShuffleAndTrimOptions(words.Select(item => item.TargetText), word.TargetText);
     }
+
 }

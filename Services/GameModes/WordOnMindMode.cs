@@ -16,7 +16,7 @@ public class WordOnMindMode : GameModeBase
 
     protected override string BuildPrompt(WordPair word)
     {
-        return $"What does '{word.TargetText}' mean?";
+        return $"Що означає «{word.TargetText}»?";
     }
 
     protected override string BuildCorrectAnswer(WordPair word)
@@ -26,7 +26,7 @@ public class WordOnMindMode : GameModeBase
 
     protected override string BuildExplanation(WordPair word)
     {
-        return $"{word.TargetText} means {word.SourceText}.";
+        return $"{word.TargetText} означає {word.SourceText}.";
     }
 
     protected override async Task<IReadOnlyList<string>> BuildOptionsAsync(

@@ -26,12 +26,24 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[E:/hpk/КУРСОВА/LinguaQuest/Components/Layout/AppFooter.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcQXBwRm9vdGVyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/hpk/КУРСОВА/LinguaQuest/Components/Layout/AppHeader.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcQXBwSGVhZGVyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [E:/hpk/КУРСОВА/LinguaQuest/Components/Pages/Dictionary.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEaWN0aW9uYXJ5LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [E:/hpk/КУРСОВА/LinguaQuest/Components/Pages/Game.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHYW1lLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/hpk/КУРСОВА/LinguaQuest/Components/Pages/GameOverview.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHYW1lT3ZlcnZpZXcucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [E:/hpk/КУРСОВА/LinguaQuest/Components/Pages/Home.razor]
@@ -97,7 +109,3 @@ build_metadata.AdditionalFiles.CssScope =
 [E:/hpk/КУРСОВА/LinguaQuest/Components/Layout/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-9ako0rjf75
-
-[E:/hpk/КУРСОВА/LinguaQuest/Components/Layout/NavMenu.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = b-jswlrmmjnr

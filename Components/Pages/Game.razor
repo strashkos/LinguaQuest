@@ -1,55 +1,38 @@
-@implements IDisposable
 @attribute [Authorize]
-@page "/game"
+@page "/game/play"
 @inject IGameService GameService
 @inject IProgressService ProgressService
 @inject IUserLearningSettingsService SettingsService
 @inject ICurrentUserService CurrentUserService
+@inject NavigationManager Navigation
 @inject IGameTimer Timer
+@inject IJSRuntime JS
 
 <div class="game-layout">
-	<!-- ЛІВ ПАНЕЛЬ: КАБІНЕТ -->
 	<aside class="game-sidebar">
 		<div class="page-card cabinet-card">
 			<h3 class="cabinet-title">🎮 Мовна Гра</h3>
-			<button type="button" class="theme-toggle" onclick="toggleTheme()" title="Переключити тему">
-				<span>☀️</span>
-			</button>
-			
-			
+			<button type="button" class="ghost-button wide-button" @onclick="ExitToOverview">↩️ До огляду</button>
+
 			<div class="cabinet-stats">
 				<div class="stat-item">
-					<div class="stat-value">@CurrentScore</div>
-					<div class="stat-label">Очки</div>
+					<div class="stat-value">@LearnedWordsCount</div>
+					<div class="stat-label">Вивчено</div>
 				</div>
 				<div class="stat-item">
-					<div class="stat-value">@CurrentStreak</div>
-					<div class="stat-label">Стрік</div>
+					<div class="stat-value">@AccuracyText</div>
+					<div class="stat-label">Точність</div>
 				</div>
 			</div>
 
 			<div class="cabinet-section">
 				<p class="cabinet-subtitle">📚 НАЛАШТУВАННЯ</p>
-				<p class="cabinet-text">Мова: <strong>@(Settings?.TargetLanguage.ToString() ?? "English")</strong></p>
-				<p class="cabinet-text">Рівень: <strong>@GetLevelLabel(Settings?.Level ?? LearningLevel.Level1)</strong></p>
+				<p class="cabinet-text">Мова: <strong>@GetLanguageLabel(Settings?.TargetLanguage ?? LearningLanguage.English)</strong></p>
 			</div>
 
 			<div class="cabinet-section">
-				<p class="cabinet-subtitle">🎯 РІВЕНЬ</p>
-				<div class="level-buttons">
-					<button class="level-btn @(SelectedLevel == 1 ? "active" : "")" @onclick="() => SelectLevel(1)">
-						1️⃣ Базовий
-					</button>
-					<button class="level-btn @(SelectedLevel == 2 ? "active" : "")" @onclick="() => SelectLevel(2)">
-						2️⃣ Середній
-					</button>
-					<button class="level-btn @(SelectedLevel == 3 ? "active" : "")" @onclick="() => SelectLevel(3)">
-						3️⃣ Високий
-					</button>
-					<button class="level-btn @(SelectedLevel == 4 ? "active" : "")" @onclick="() => SelectLevel(4)">
-						4️⃣ Просунутий
-					</button>
-				</div>
+				<p class="cabinet-subtitle">🎯 СКЛАДНІСТЬ</p>
+				<p class="cabinet-text">Рівень акаунта застосовується автоматично в грі.</p>
 			</div>
 
 			<div class="cabinet-section">
@@ -57,6 +40,10 @@
 				<textarea class="notes-input" @bind="LevelNotes" placeholder="Напишіть нотатки..."></textarea>
 			</div>
 
+			<div class="cabinet-section">
+				<p class="cabinet-subtitle">⚙️ ТЕМА</p>
+				<p class="cabinet-text">Тема керується одним глобальним перемикачем у шапці.</p>
+			</div>
 			@if (GameState == "menu" || GameState == "results")
 			{
 				<button class="primary-button wide-button" @onclick="PlayButtonClick" disabled="@IsLoading">
@@ -72,42 +59,51 @@
 			}
 			else
 			{
-				<button class="ghost-button wide-button" @onclick="MenuButtonClick">
-					↩️ МЕНЮ
-				</button>
+				<button class="ghost-button wide-button" @onclick="ExitToOverview">↩️ Меню</button>
 			}
 		</div>
 	</aside>
 
-	<!-- ПРАВА ПАНЕЛЬ: ІГРОВЕ ПОЛЕ -->
+	<div id="auth-modal" class="auth-modal hidden" role="dialog" aria-modal="true">
+		<div class="auth-backdrop" onclick="hideAuthModal()"></div>
+		<div class="auth-content page-card">
+			<h3>🔐 Увійти або грати як гість</h3>
+			<p>Щоб зберігати прогрес — увійдіть або зареєструйтесь. Можна також грати як гість без збереження.</p>
+			<div class="auth-actions">
+				<a class="primary-button" href="/login">Увійти</a>
+				<a class="ghost-button" href="/register">Реєстрація</a>
+				<button class="secondary-button" @onclick="StartGuestPlay">Грати як гість</button>
+			</div>
+		</div>
+	</div>
+
 	<main class="game-main">
 		@if (GameState == "menu")
 		{
 			<div class="page-card level-path-card">
 				<div class="menu-string" aria-label="Breadcrumb navigation">
-					<button type="button" class="menu-chip">Home</button>
+					@if (UserId == null)
+					{
+						<a class="menu-chip" href="/">Головна</a>
+					}
 					<span class="menu-separator">/</span>
-					<button type="button" class="menu-chip active">Game</button>
-					<span class="menu-separator">/</span>
-					<button type="button" class="menu-chip">Levels</button>
+					<a class="menu-chip active" href="/game">Гра</a>
 				</div>
-				<h3 class="level-path-title">🏆 СТЕЖКА</h3>
+				<h3 class="level-path-title">🏆 Прогрес рівнів</h3>
 				<div class="level-path">
-					@for (int i = 1; i <= 4; i++)
+					@for (int i = 1; i <= 15; i++)
 					{
 						var level = i;
 						var stars = GetLevelStars(i);
-						<button type="button" class="level-step @(level == SelectedLevel ? "current" : "") @(stars > 0 ? "completed" : "")" @onclick="() => SelectLevel(level)">
-							<div class="level-circle">
-								<span class="level-num">@level</span>
-							</div>
+						<div class="level-step @(level == AccountLevelNumber ? "current" : "") @(stars > 0 ? "completed" : "")">
+							<div class="level-circle"><span class="level-num">@level</span></div>
 							<div class="level-stars">
 								@for (int s = 0; s < 3; s++)
 								{
 									<span class="star @(s < stars ? "filled" : "")">⭐</span>
 								}
 							</div>
-						</button>
+						</div>
 					}
 				</div>
 			</div>
@@ -117,8 +113,7 @@
 			<div class="page-card game-card">
 				<div class="game-header">
 					<div>
-						<span class="game-mode">@CurrentTask.Mode.ToString()</span>
-						<p class="game-level">Рівень @SelectedLevel</p>
+						<span class="game-mode">@GetModeLabel(CurrentTask.Mode)</span>
 					</div>
 					@if (UseTimer)
 					{
@@ -136,40 +131,46 @@
 					<p class="hint-text">@CurrentTask.Hint</p>
 				</div>
 
-				<div class="answers-grid @(CurrentTask.Mode == GameModeType.QuickFind ? "grid-2x2" : "grid-1x4")">
-					@foreach (var option in CurrentTask.Options)
-					{
-						var isDisabled = GameResult != null;
-						var buttonClass = "";
-						
-						if (GameResult != null)
+				@if (CurrentTask.Mode == GameModeType.SentenceCompose)
+				{
+					<div class="cabinet-section">
+						<input class="search-input" @bind="TypedSentence" placeholder="Наприклад: I see a cat." disabled="@(GameResult != null)" />
+						<button class="primary-button" @onclick="SubmitTypedAnswer" disabled="@(GameResult != null || string.IsNullOrWhiteSpace(TypedSentence))">Перевірити</button>
+					</div>
+				}
+				else
+				{
+					<div class="answers-grid @(CurrentTask.Mode == GameModeType.QuickFind || CurrentTask.Mode == GameModeType.SentenceChoice ? "grid-2x2" : "grid-1x4")">
+						@foreach (var option in CurrentTask.Options)
 						{
-							if (option == CurrentTask.CorrectAnswer)
-								buttonClass = "correct";
-							else if (option == LastAnswer && option != CurrentTask.CorrectAnswer)
-								buttonClass = "wrong";
-						}
+							var isDisabled = GameResult != null;
+							var buttonClass = string.Empty;
 
-						if (CurrentTask.Mode == GameModeType.QuickFind)
-						{
-							<button type="button" 
-									class="answer-card @buttonClass"
-									@onclick="() => AnswerClick(option)"
-									disabled="@isDisabled">
-								<div class="answer-text">@option</div>
-							</button>
+							if (GameResult != null)
+							{
+								if (option == CurrentTask.CorrectAnswer)
+								{
+									buttonClass = "correct";
+								}
+								else if (option == LastAnswer && option != CurrentTask.CorrectAnswer)
+								{
+									buttonClass = "wrong";
+								}
+							}
+
+							if (CurrentTask.Mode == GameModeType.QuickFind || CurrentTask.Mode == GameModeType.SentenceChoice)
+							{
+								<button type="button" class="answer-card @buttonClass" @onclick="() => AnswerClick(option)" disabled="@isDisabled">
+									<div class="answer-text">@option</div>
+								</button>
+							}
+							else
+							{
+								<button type="button" class="answer-button @buttonClass" @onclick="() => AnswerClick(option)" disabled="@isDisabled">@option</button>
+							}
 						}
-						else
-						{
-							<button type="button" 
-									class="answer-button @buttonClass"
-									@onclick="() => AnswerClick(option)"
-									disabled="@isDisabled">
-								@option
-							</button>
-						}
-					}
-				</div>
+					</div>
+				}
 
 				@if (GameResult != null)
 				{
@@ -203,7 +204,7 @@
 				</div>
 				<div class="end-actions">
 					<button class="primary-button" @onclick="PlayAgain">🔄 Знову</button>
-					<button class="ghost-button" @onclick="MenuButtonClick">🏠 Меню</button>
+					<button class="ghost-button" @onclick="ExitToOverview">🏠 Огляд</button>
 				</div>
 			</div>
 		}
@@ -215,50 +216,99 @@
 	private GameTaskViewModel? CurrentTask;
 	private GameResultViewModel? GameResult;
 	private string? LastAnswer;
+	private string TypedSentence = string.Empty;
 	private LearningSettingsViewModel? Settings;
-
-	// State
-	private string GameState = "menu"; // menu, playing, results
-	private int SelectedLevel = 1;
+	private string GameState = "menu";
 	private string LevelNotes = string.Empty;
 	private bool IsLoading = false;
 	private bool UseTimer = true;
-
-	// Scores
-	private int CurrentScore = 1250;
-	private int CurrentStreak = 7;
+	private bool IsGuest = false;
+	private int LearnedWordsCount = 0;
+	private int CorrectAttemptsCount = 0;
+	private int TotalAttemptsCount = 0;
 	private int SessionScore = 0;
 	private int SessionCorrect = 0;
 	private int SessionTotal = 0;
 	private int SessionStars = 0;
-	private Dictionary<int, int> LevelStarsDict = new() { { 1, 3 }, { 2, 2 }, { 3, 1 }, { 4, 0 } };
+	private readonly Dictionary<int, int> LevelStarsDict = new();
 	private CancellationTokenSource? _timerCts;
+
+	private readonly Queue<int> RecentWordIds = new();
+	private const int RecentWordLimit = 5;
 
 	protected override async Task OnInitializedAsync()
 	{
 		UserId = await CurrentUserService.GetUserIdAsync();
 		await ReloadSettings();
+		await ReloadProgressAsync();
 	}
 
 	private async Task ReloadSettings()
 	{
 		try
 		{
-			var model = await SettingsService.GetAsync(UserId ?? "");
+			var model = await SettingsService.GetAsync(UserId ?? string.Empty);
 			Settings = LearningSettingsViewModel.FromModel(model);
 		}
-		catch { }
+		catch
+		{
+		}
 	}
 
-	private void SelectLevel(int level)
+	private async Task ReloadProgressAsync()
 	{
-		SelectedLevel = level;
-		StateHasChanged();
+		if (string.IsNullOrWhiteSpace(UserId) || UserId == "guest")
+		{
+			LearnedWordsCount = 0;
+			CorrectAttemptsCount = 0;
+			TotalAttemptsCount = 0;
+			LevelStarsDict.Clear();
+			return;
+		}
+
+		try
+		{
+			var progress = await ProgressService.GetProgressAsync(UserId);
+			LearnedWordsCount = progress.Count(item => item.IsLearned);
+			CorrectAttemptsCount = progress.Sum(item => item.CorrectAttempts);
+			TotalAttemptsCount = progress.Sum(item => item.Attempts);
+
+			LevelStarsDict.Clear();
+			foreach (var level in Enum.GetValues<LearningLevel>())
+			{
+				var learnedCount = progress.Count(item => item.WordPair?.Level == level && item.IsLearned);
+				LevelStarsDict[(int)level] = learnedCount >= 6 ? 3 : learnedCount >= 3 ? 2 : learnedCount >= 1 ? 1 : 0;
+			}
+		}
+		catch
+		{
+			LearnedWordsCount = 0;
+			CorrectAttemptsCount = 0;
+			TotalAttemptsCount = 0;
+			LevelStarsDict.Clear();
+		}
 	}
+
+	private int AccountLevelNumber => (int)(Settings?.Level ?? LearningLevel.Level1) + 1;
 
 	private async Task PlayButtonClick()
 	{
-		if (IsLoading) return;
+		if (IsLoading)
+		{
+			return;
+		}
+
+		if (UserId == null && !IsGuest)
+		{
+			await JS.InvokeVoidAsync("showAuthModal");
+			return;
+		}
+
+		await StartGameAsync();
+	}
+
+	private async Task StartGameAsync()
+	{
 		IsLoading = true;
 		StateHasChanged();
 		try
@@ -277,6 +327,14 @@
 		}
 	}
 
+	private async Task StartGuestPlay()
+	{
+		IsGuest = true;
+		UserId = "guest";
+		await JS.InvokeVoidAsync("hideAuthModal");
+		await StartGameAsync();
+	}
+
 	private async Task NextRound()
 	{
 		_timerCts?.Cancel();
@@ -284,59 +342,95 @@
 		_timerCts = new CancellationTokenSource();
 		GameResult = null;
 		LastAnswer = null;
+		TypedSentence = string.Empty;
 		SessionTotal++;
+
 		try
 		{
-			var settings = await SettingsService.GetAsync(UserId ?? "");
-			CurrentTask = await GameService.CreateTaskAsync(
-				LearningLanguage.Ukrainian,
-				settings.TargetLanguage,
-				settings.Level,
-				GameModeType.QuickFind
-			);
+			var settings = await SettingsService.GetAsync(UserId ?? string.Empty);
+			GameTaskViewModel? nextTask = null;
+			for (var attempt = 0; attempt < 5; attempt++)
+			{
+				nextTask = await GameService.CreateTaskAsync(
+					LearningLanguage.Ukrainian,
+					settings.TargetLanguage,
+					settings.Level);
+
+				if (nextTask == null || !RecentWordIds.Contains(nextTask.WordPairId))
+				{
+					break;
+				}
+			}
+
+			CurrentTask = nextTask;
+			if (CurrentTask != null)
+			{
+				RecentWordIds.Enqueue(CurrentTask.WordPairId);
+				while (RecentWordIds.Count > RecentWordLimit)
+				{
+					RecentWordIds.Dequeue();
+				}
+			}
+
 			if (UseTimer && CurrentTask != null)
 			{
 				Timer.Start(30);
 				_ = RunTimerAsync(_timerCts.Token);
 			}
+
+			await ReloadProgressAsync();
 		}
 		catch (Exception ex)
 		{
 			Console.WriteLine($"Error: {ex.Message}");
 		}
+
 		StateHasChanged();
 	}
 
 	private async Task AnswerClick(string answer)
 	{
-		if (CurrentTask == null || GameResult != null) return;
+		if (CurrentTask == null || GameResult != null)
+		{
+			return;
+		}
+
 		LastAnswer = answer;
 		try
 		{
 			GameResult = await GameService.EvaluateAsync(CurrentTask, answer);
-			await ProgressService.RegisterAttemptAsync(
-				UserId ?? "",
-				CurrentTask.WordPairId,
-				GameResult.IsCorrect
-			);
+			await ProgressService.RegisterAttemptAsync(UserId ?? string.Empty, CurrentTask.WordPairId, GameResult.IsCorrect);
+
 			if (GameResult.IsCorrect)
 			{
 				SessionCorrect++;
 				SessionScore += 50;
-				CurrentStreak++;
 			}
 			else
 			{
 				SessionScore = Math.Max(0, SessionScore - 10);
-				CurrentStreak = 0;
 			}
+
 			Timer.Stop();
 		}
 		catch (Exception ex)
 		{
 			Console.WriteLine($"Error: {ex.Message}");
 		}
+
+		await ReloadProgressAsync();
 		StateHasChanged();
+	}
+
+	private async Task SubmitTypedAnswer()
+	{
+		var answer = TypedSentence.Trim();
+		if (string.IsNullOrWhiteSpace(answer))
+		{
+			return;
+		}
+
+		await AnswerClick(answer);
 	}
 
 	private async Task RunTimerAsync(CancellationToken token)
@@ -348,21 +442,25 @@
 				await Task.Delay(1000, token);
 				Timer.Tick();
 				await InvokeAsync(StateHasChanged);
+
 				if (Timer.RemainingSeconds <= 0 && GameResult == null)
 				{
 					GameResult = new GameResultViewModel
 					{
 						IsCorrect = false,
 						Message = "⏰ Час вийшов!",
-						Explanation = CurrentTask?.Explanation ?? "",
-						CorrectAnswer = CurrentTask?.CorrectAnswer ?? ""
+						Explanation = CurrentTask?.Explanation ?? string.Empty,
+						CorrectAnswer = CurrentTask?.CorrectAnswer ?? string.Empty
 					};
-					await ProgressService.RegisterAttemptAsync(UserId ?? "", CurrentTask?.WordPairId ?? 0, false);
+
+					await ProgressService.RegisterAttemptAsync(UserId ?? string.Empty, CurrentTask?.WordPairId ?? 0, false);
 					await InvokeAsync(StateHasChanged);
 				}
 			}
 		}
-		catch { }
+		catch
+		{
+		}
 	}
 
 	private void PlayAgain()
@@ -374,31 +472,32 @@
 		_ = NextRound();
 	}
 
-	private void MenuButtonClick()
+	private void ExitToOverview()
 	{
 		_timerCts?.Cancel();
-		if (SessionTotal > 0)
-		{
-			GameState = "results";
-			SessionStars = SessionCorrect >= SessionTotal - 1 ? 3 : SessionCorrect >= SessionTotal / 2 ? 2 : 1;
-		}
-		else
-		{
-			GameState = "menu";
-		}
-		StateHasChanged();
+		Navigation.NavigateTo("/game");
 	}
 
-	private int GetLevelStars(int level) => LevelStarsDict.TryGetValue(level, out var s) ? s : 0;
+	private int GetLevelStars(int level) => LevelStarsDict.TryGetValue(level, out var stars) ? stars : 0;
 
-	private string GetLevelLabel(LearningLevel level) => level switch
+	private static string GetModeLabel(GameModeType mode) => mode switch
 	{
-		LearningLevel.Level1 => "Базовий",
-		LearningLevel.Level2 => "Середній",
-		LearningLevel.Level3 => "Високий",
-		LearningLevel.Level4 => "Просунутий",
-		_ => "–"
+		GameModeType.SentenceChoice => "Речення: вибір слова",
+		GameModeType.SentenceCompose => "Речення: вільна відповідь",
+		GameModeType.QuickFind => "Швидкий вибір",
+		GameModeType.WordOnMind => "Пошук перекладу",
+		_ => mode.ToString()
 	};
+
+	private static string GetLanguageLabel(LearningLanguage language) => language switch
+	{
+		LearningLanguage.Ukrainian => "Українська",
+		LearningLanguage.English => "Англійська",
+		LearningLanguage.German => "Німецька",
+		_ => language.ToString()
+	};
+
+	private string AccuracyText => TotalAttemptsCount == 0 ? "0%" : $"{Math.Round(CorrectAttemptsCount * 100.0 / TotalAttemptsCount):0}%";
 
 	public void Dispose()
 	{

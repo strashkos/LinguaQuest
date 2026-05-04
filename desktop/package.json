@@ -1,0 +1,13 @@
+{
+  "name": "linguaquest-desktop",
+  "version": "0.1.0",
+  "description": "Electron wrapper to run LinguaQuest local server and show it as a desktop app",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "install-deps": "npm install"
+  },
+  "dependencies": {
+    "electron": "^26.0.0"
+  }
+}

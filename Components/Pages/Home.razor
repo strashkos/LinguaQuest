@@ -1,38 +1,50 @@
 @page "/"
 @inject NavigationManager Navigation
 
-<section class="hero page-card">
-	<div>
+<section class="hero page-card glass-card">
+	<div class="hero-hero">
 		<p class="eyebrow">LinguaQuest</p>
-		<h1>Learn words by playing.</h1>
-		<p class="lead">Small practice rounds, an adaptive dictionary, and a clean learning flow for English and German.</p>
+		<h1>Вчи мову через гру, а не через нудні форми.</h1>
+		<p class="lead">Швидкі раунди, чесний прогрес і зрозумілий інтерфейс для української, англійської та німецької.</p>
 		<div class="hero-actions">
-			<button class="primary-button" @onclick='() => Navigation.NavigateTo("/game")'>Start game</button>
-			<button class="ghost-button" @onclick='() => Navigation.NavigateTo("/settings")'>Choose settings</button>
+			<a class="primary-button" href="/game">Почати гру</a>
+			<a class="ghost-button" href="/dictionary">Слова</a>
 		</div>
 	</div>
 
-	<div class="hero-stats">
-		<div class="progress-badge"><strong>Quick practice</strong><span>Mode</span></div>
-		<div class="progress-badge accent"><strong>EN / DE</strong><span>Languages</span></div>
-		<div class="progress-badge warm"><strong>Vocabulary</strong><span>Focus</span></div>
+	<div class="hero-card-stack">
+		<div class="feature-tile">
+			<div class="feature-value">96+</div>
+			<div class="feature-label">Слів у базі</div>
+		</div>
+		<div class="feature-tile">
+			<div class="feature-value">2 теми</div>
+			<div class="feature-label">Темний і світлий режим</div>
+		</div>
+		<div class="feature-tile">
+			<div class="feature-value">Гість + акаунт</div>
+			<div class="feature-label">Прогрес зберігається</div>
+		</div>
 	</div>
 </section>
 
 <section class="grid-cards">
-	<article class="page-card">
-		<h2>Game</h2>
-		<p class="muted">Answer quick rounds and see your progress build up.</p>
-		<p>Train by translating words with a small set of answer choices.</p>
+	<article class="page-card glass-card">
+		<p class="eyebrow">Гра</p>
+		<h2>Швидкі раунди</h2>
+		<p class="muted">Відповідай на короткі завдання без зайвих кроків.</p>
+		<p>Сторінка має вести до дії, а не просто виглядати декоративно.</p>
 	</article>
-	<article class="page-card">
-		<h2>Dictionary</h2>
-		<p class="muted">Filter the current word set by search term.</p>
-		<p>Browse all the seeded words and use them as a reference while studying.</p>
+	<article class="page-card glass-card">
+		<p class="eyebrow">Словник</p>
+		<h2>Атлас слів</h2>
+		<p class="muted">Шукай і переглядай пари слів у базі.</p>
+		<p>Зручно перевіряти себе або готуватися до раунду.</p>
 	</article>
-	<article class="page-card">
-		<h2>Settings</h2>
-		<p class="muted">Choose the language pair and learning level.</p>
-		<p>Pick the study mode that fits the lesson you want to practice next.</p>
+	<article class="page-card glass-card">
+		<p class="eyebrow">Акаунт</p>
+		<h2>Реальний прогрес</h2>
+		<p class="muted">Увійди, зареєструйся або грай як гість.</p>
+		<p>Вивчені слова та налаштування прив’язані до акаунта.</p>
 	</article>
 </section>

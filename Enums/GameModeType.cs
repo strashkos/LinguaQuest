@@ -3,5 +3,7 @@ namespace LinguaQuest.Web.Enums;
 public enum GameModeType
 {
     QuickFind,
-    WordOnMind
+    WordOnMind,
+    SentenceChoice,
+    SentenceCompose
 }

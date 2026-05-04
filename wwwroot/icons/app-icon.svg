@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="LinguaQuest">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8df0ff"/>
+      <stop offset="100%" stop-color="#d9468e"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#0a1118"/>
+  <circle cx="256" cy="256" r="176" fill="url(#g)" opacity="0.14"/>
+  <path d="M156 162h72c52 0 94 42 94 94s-42 94-94 94h-30l-52 52v-52h10c-32-16-52-49-52-92 0-52 42-96 92-96zm14 48c-24 0-44 20-44 44 0 38 20 64 58 80l18 8h18c26 0 46-20 46-46s-20-46-46-46h-50z" fill="url(#g)"/>
+  <text x="256" y="374" text-anchor="middle" fill="#f0f6fc" font-family="Segoe UI, Arial, sans-serif" font-size="74" font-weight="700">LQ</text>
+</svg>

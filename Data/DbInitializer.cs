@@ -1,4 +1,3 @@
-using LinguaQuest.Web.Data.SeedData;
 using LinguaQuest.Web.Enums;
 using LinguaQuest.Web.Models;
 using Microsoft.AspNetCore.Identity;
@@ -28,15 +27,10 @@ public static class DbInitializer
                         .Ascending(item => item.WordPairId),
                     new CreateIndexOptions { Unique = true }));
 
-            var hasUkrainianSeed = await context.WordPairs
-                .Find(item => item.SourceLanguage == LearningLanguage.Ukrainian)
-                .AnyAsync();
-
-            if (!hasUkrainianSeed)
-            {
-                await context.WordPairs.DeleteManyAsync(Builders<WordPair>.Filter.Empty);
-                await context.WordPairs.InsertManyAsync(WordPairsSeed.Create());
-            }
+            await context.WordPairs.Indexes.CreateOneAsync(
+                new CreateIndexModel<WordPair>(
+                    Builders<WordPair>.IndexKeys.Ascending(item => item.Id),
+                    new CreateIndexOptions { Unique = true }));
 
             var demoUser = await context.Users.Find(item => item.Id == "demo").FirstOrDefaultAsync();
             if (demoUser is null)
@@ -76,7 +70,8 @@ public static class DbInitializer
                     SourceLanguage = LearningLanguage.Ukrainian,
                     TargetLanguage = LearningLanguage.English,
                     Level = LearningLevel.Level1,
-                    WordsPerSession = 5
+                    WordsPerSession = 5,
+                    ThemePreference = "dark"
                 });
             }
             else
@@ -85,11 +80,36 @@ public static class DbInitializer
                 demoSettings.TargetLanguage = LearningLanguage.English;
                 demoSettings.Level = LearningLevel.Level1;
                 demoSettings.WordsPerSession = 5;
+                demoSettings.ThemePreference = string.IsNullOrWhiteSpace(demoSettings.ThemePreference) ? "dark" : demoSettings.ThemePreference;
 
                 await context.UserLearningSettings.ReplaceOneAsync(
                     item => item.UserId == "demo",
                     demoSettings,
                     new ReplaceOptions { IsUpsert = true });
+            }
+
+            // Seed some demo progress so demo user appears to have learned a few words
+            var existingProgress = await context.DictionaryProgress.Find(p => p.UserId == "demo").AnyAsync();
+            if (!existingProgress)
+            {
+                var demoProgress = new List<DictionaryProgress>();
+                // mark first 6 word pairs with some attempts
+                for (int i = 1; i <= 6; i++)
+                {
+                    demoProgress.Add(new DictionaryProgress
+                    {
+                        UserId = "demo",
+                        WordPairId = i,
+                        Attempts = i + 2,
+                        CorrectAttempts = Math.Max(1, i),
+                        FirstSeenUtc = DateTime.UtcNow.AddDays(-10 + i),
+                        LastSeenUtc = DateTime.UtcNow.AddDays(-1 + i)
+                    });
+                }
+                if (demoProgress.Count > 0)
+                {
+                    await context.DictionaryProgress.InsertManyAsync(demoProgress);
+                }
             }
         }
         catch (Exception)
@@ -97,4 +117,5 @@ public static class DbInitializer
             // Let the app start even if MongoDB is unavailable in local development.
         }
     }
+
 }

@@ -25,6 +25,15 @@ public class UserLearningSettingsService : IUserLearningSettingsService
 
     public async Task<UserLearningSettings> SaveAsync(UserLearningSettings settings, CancellationToken cancellationToken = default)
     {
+        var existing = await _settingsCollection
+            .Find(item => item.UserId == settings.UserId)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (existing is not null)
+        {
+            settings.Id = existing.Id;
+        }
+
         await _settingsCollection.ReplaceOneAsync(
             item => item.UserId == settings.UserId,
             settings,

@@ -25,7 +25,6 @@ E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\rjimswa.dswa.cache.json
 E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
 E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
 E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\scopedcss\Components\Layout\MainLayout.razor.rz.scp.css
-E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\scopedcss\Components\Layout\NavMenu.razor.rz.scp.css
 E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\scopedcss\bundle\LinguaQuest.Web.styles.css
 E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\scopedcss\projectbundle\LinguaQuest.Web.bundle.scp.css
 E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\staticwebassets.build.json
@@ -39,3 +38,4 @@ E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\refint\LinguaQuest.Web.dll
 E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\LinguaQuest.Web.pdb
 E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\LinguaQuest.Web.genruntimeconfig.cache
 E:\hpk\КУРСОВА\LinguaQuest\obj\Debug\net8.0\ref\LinguaQuest.Web.dll
+E:\hpk\КУРСОВА\LinguaQuest\bin\Debug\net8.0\desktop\package.json

@@ -4,37 +4,37 @@
 @inject ICurrentUserService CurrentUserService
 
 <section class="page-card">
-	<h2>Learning settings</h2>
-	<p class="muted">Ukrainian is fixed as the source language. Choose the target language and level.</p>
+	<h2>Налаштування навчання</h2>
+	<p class="muted">Українська зафіксована як джерельна мова. Обери цільову мову та рівень.</p>
 
 	<div class="form-grid">
 		<label>
-			Source language
+			Джерельна мова
 			<input class="search-input" value="Ukrainian" disabled />
 		</label>
 		<label>
-			Target language
+			Цільова мова
 			<select class="search-input" value="@Settings.TargetLanguage" @onchange="HandleTargetLanguageChanged">
-				<option value="@LearningLanguage.English">English</option>
-				<option value="@LearningLanguage.German">German</option>
+				<option value="@LearningLanguage.English">Англійська</option>
+				<option value="@LearningLanguage.German">Німецька</option>
 			</select>
 		</label>
 		<label>
-			Level
+			Рівень
 			<select class="search-input" value="@Settings.Level" @onchange="HandleLevelChanged">
 				@foreach (var item in Enum.GetValues<LearningLevel>())
 				{
-					<option value="@item">@GetLevelLabel(item)</option>
+					<option value="@item">@LearningLevelLabels.GetLabel(item)</option>
 				}
 			</select>
 		</label>
 		<label>
-			Words per session
+			Слів за сесію
 			<input class="search-input" type="number" min="1" max="20" value="@Settings.WordsPerSession" @oninput="HandleSessionSizeChanged" />
 		</label>
 	</div>
 
-	<button class="primary-button" type="button" @onclick="SaveAsync">Save settings</button>
+	<button class="primary-button" type="button" @onclick="SaveAsync">Зберегти налаштування</button>
 
 	@if (!string.IsNullOrWhiteSpace(Status))
 	{
@@ -57,7 +57,7 @@
 	private async Task SaveAsync()
 	{
 		await SettingsService.SaveAsync(Settings.ToModel(UserId ?? string.Empty));
-		Status = "Settings saved.";
+		Status = "Налаштування збережено.";
 	}
 
 	private void HandleSourceLanguageChanged(ChangeEventArgs args)
@@ -83,12 +83,4 @@
 		}
 	}
 
-	private static string GetLevelLabel(LearningLevel level) => level switch
-	{
-		LearningLevel.Level1 => "1 - alphabet and basics",
-		LearningLevel.Level2 => "2 - core words",
-		LearningLevel.Level3 => "3 - simple phrases",
-		LearningLevel.Level4 => "4 - extended vocabulary",
-		_ => level.ToString()
-	};
 }

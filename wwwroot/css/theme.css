@@ -1,32 +1,27 @@
 /* === THEME TOGGLE BUTTON === */
 .theme-toggle {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    width: 40px;
-    height: 40px;
-    border-radius: 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 0.75rem;
     background: var(--bg-tertiary);
     border: 1px solid var(--border-primary);
     color: var(--text-primary);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
+    transition: all 0.25s ease;
+    flex: 0 0 auto;
 }
 
 .theme-toggle:hover {
-    background: var(--accent-primary);
-    border-color: var(--accent-primary);
-    transform: scale(1.1);
-    box-shadow: 0 0 12px rgba(217, 70, 116, 0.4);
+    border-color: var(--accent-secondary);
+    transform: translateY(-1px);
 }
 
 .theme-toggle:active {
-    transform: scale(0.95);
+    transform: translateY(0);
 }
 
 /* === UPDATED COLORS FOR LIGHT/DARK MODE === */

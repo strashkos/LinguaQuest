@@ -5,18 +5,18 @@
 @inject ICurrentUserService CurrentUserService
 
 <section class="page-card">
-	<h2>Dictionary</h2>
-		<p class="muted">Search the words for @Settings.TargetLanguage at @Settings.Level.</p>
+	<h2>Словник</h2>
+		<p class="muted">Показуємо слова для @GetLanguageLabel(Settings.TargetLanguage) на рівні @GetLevelLabel(Settings.Level).</p>
 
-	<input class="search-input" placeholder="Search words, categories, or hints" value="@Search" @oninput="HandleInput" />
+	<input class="search-input" placeholder="Пошук слів, категорій або підказок" value="@Search" @oninput="HandleInput" />
 
 	@if (Items is null)
 	{
-		<p>Loading dictionary...</p>
+		<p>Завантажуємо словник...</p>
 	}
 	else if (Items.Count == 0)
 	{
-		<p>No words match your search.</p>
+		<p>Нічого не знайдено.</p>
 	}
 	else
 	{
@@ -75,4 +75,14 @@
 			})
 			.ToList();
 	}
+
+	private static string GetLevelLabel(LearningLevel level) => LearningLevelLabels.GetLabel(level);
+
+	private static string GetLanguageLabel(LearningLanguage language) => language switch
+	{
+		LearningLanguage.Ukrainian => "Українська",
+		LearningLanguage.English => "Англійська",
+		LearningLanguage.German => "Німецька",
+		_ => language.ToString()
+	};
 }

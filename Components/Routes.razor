@@ -3,10 +3,14 @@
         <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(LinguaQuest.Web.Components.Layout.MainLayout)">
             <NotAuthorized>
                 <LayoutView Layout="typeof(LinguaQuest.Web.Components.Layout.MainLayout)">
-                    <div class="page-card">
-                        <h1>Sign in required</h1>
-                        <p>You need an account to open this page.</p>
-                        <a class="primary-button" href="/login">Go to login</a>
+                    <div class="page-card glass-card auth-form-panel">
+                        <p class="eyebrow">LinguaQuest</p>
+                        <h1>Доступ закрито</h1>
+                        <p class="muted">Для цієї сторінки потрібен акаунт. Відкрий модалку в хедері або скористайся кнопками нижче.</p>
+                        <div class="hero-actions">
+                            <a class="primary-button" href="/login">Увійти</a>
+                            <a class="ghost-button" href="/register">Створити акаунт</a>
+                        </div>
                     </div>
                 </LayoutView>
             </NotAuthorized>
@@ -15,9 +19,11 @@
     </Found>
     <NotFound>
         <LayoutView Layout="typeof(LinguaQuest.Web.Components.Layout.MainLayout)">
-            <div class="page-card">
-                <h1>Page not found</h1>
-                <p>The page you requested does not exist.</p>
+            <div class="page-card glass-card auth-form-panel">
+                <p class="eyebrow">404</p>
+                <h1>Сторінку не знайдено</h1>
+                <p class="muted">Сторінка, яку ви шукаєте, не існує.</p>
+                <a class="primary-button" href="/">На головну</a>
             </div>
         </LayoutView>
     </NotFound>

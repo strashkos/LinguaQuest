@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LinguaQuest.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b01920efe96c924e7ff0d69ab01fb7e0fbdb9b6b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+47a91121ceb7320d460a28d68964f15c2d9effb4")]
 [assembly: System.Reflection.AssemblyProductAttribute("LinguaQuest.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LinguaQuest.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

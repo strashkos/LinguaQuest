@@ -1,0 +1,61 @@
+@attribute [Authorize]
+@page "/game"
+@inject NavigationManager Navigation
+@inject ICurrentUserService CurrentUserService
+@inject IUserLearningSettingsService SettingsService
+@inject IProgressService ProgressService
+
+<section class="game-overview page-card glass-card">
+    <div class="game-overview-hero">
+        <p class="eyebrow">LinguaQuest</p>
+        <h1>Гра, яка веде прямо в раунд.</h1>
+        <p class="lead">Натисни грати і перейди на окремий екран без гортання назад і вперед.</p>
+        <button class="primary-button" @onclick="PlayAsync">Грати</button>
+    </div>
+
+    <div class="overview-grid">
+        <article class="page-card glass-card">
+            <p class="eyebrow">Акаунт</p>
+            <h2>@AccountLevelLabel</h2>
+            <p class="muted">Поточний рівень прив’язаний до профілю.</p>
+        </article>
+        <article class="page-card glass-card">
+            <p class="eyebrow">Мова</p>
+            <h2>@TargetLanguageLabel</h2>
+            <p class="muted">Слова підбираються під твою цільову мову.</p>
+        </article>
+        <article class="page-card glass-card">
+            <p class="eyebrow">Прогрес</p>
+            <h2>@LearnedWordsCount</h2>
+            <p class="muted">Вивчені слова зберігаються в MongoDB.</p>
+        </article>
+    </div>
+</section>
+
+@code {
+    private string AccountLevelLabel = "—";
+    private string TargetLanguageLabel = "—";
+    private int LearnedWordsCount;
+    private string? UserId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        UserId = await CurrentUserService.GetUserIdAsync();
+        var settings = await SettingsService.GetAsync(UserId ?? string.Empty);
+        AccountLevelLabel = LearningLevelLabels.GetLabel(settings.Level);
+        TargetLanguageLabel = settings.TargetLanguage switch
+        {
+            LearningLanguage.English => "Англійська",
+            LearningLanguage.German => "Німецька",
+            _ => settings.TargetLanguage.ToString()
+        };
+
+        var progress = await ProgressService.GetProgressAsync(UserId ?? string.Empty);
+        LearnedWordsCount = progress.Count(item => item.IsLearned);
+    }
+
+    private void PlayAsync()
+    {
+        Navigation.NavigateTo("/game/play");
+    }
+}

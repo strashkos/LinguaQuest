@@ -1,29 +1,19 @@
 .shell[b-9ako0rjf75] {
     min-height: 100vh;
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    background: linear-gradient(135deg, #081120 0%, #111a2d 48%, #19243d 100%);
+    position: relative;
+    background:
+        radial-gradient(circle at top left, rgba(141, 240, 255, 0.18), transparent 30%),
+        radial-gradient(circle at right top, rgba(246, 211, 101, 0.16), transparent 22%),
+        linear-gradient(180deg, #060b16 0%, #0d1526 44%, #111b31 100%);
     color: #f5f7fb;
 }
 
-.sidebar[b-9ako0rjf75] {
-    padding: 1.5rem;
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(4, 10, 20, 0.55);
-    backdrop-filter: blur(18px);
-}
-
 .main-panel[b-9ako0rjf75] {
-    padding: 2rem;
+    padding: 0 1.25rem 2rem;
 }
 
 @media (max-width: 900px) {
-    .shell[b-9ako0rjf75] {
-        grid-template-columns: 1fr;
-    }
-
-    .sidebar[b-9ako0rjf75] {
-        border-right: 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    .main-panel[b-9ako0rjf75] {
+        padding-inline: 0.9rem;
     }
 }

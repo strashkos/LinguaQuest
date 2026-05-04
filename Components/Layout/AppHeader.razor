@@ -1,0 +1,156 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject IUserLearningSettingsService SettingsService
+@inject ICurrentUserService CurrentUserService
+
+<header class="app-header">
+	<div class="header-brand" @onclick='() => Navigation.NavigateTo("/")'>
+		<div class="brand-mark">LQ</div>
+		<div class="brand-text">
+			<div class="brand-title">LinguaQuest</div>
+			<div class="brand-subtitle">Play. Learn. Repeat.</div>
+		</div>
+	</div>
+
+	<nav class="header-nav" aria-label="Primary">
+		<NavLink href="/" Match="NavLinkMatch.All">Головна</NavLink>
+		<NavLink href="/game">Гра</NavLink>
+		<NavLink href="/dictionary">Словник</NavLink>
+		<NavLink href="/settings">Налаштування</NavLink>
+	</nav>
+
+	<div class="header-actions">
+		<button type="button" class="theme-toggle" @onclick="ToggleThemeAsync" title="Switch theme">
+			<span>☀️</span>
+		</button>
+
+		<AuthorizeView>
+			<Authorized>
+				<form method="post" action="/auth/logout">
+					<button type="submit" class="header-button ghost">Вийти</button>
+				</form>
+			</Authorized>
+			<NotAuthorized>
+					<button type="button" class="header-button primary" onclick="showAppAuthModal()">Увійти</button>
+			</NotAuthorized>
+		</AuthorizeView>
+	</div>
+</header>
+
+		<div id="app-auth-modal" class="auth-modal-overlay" onclick="hideAppAuthModal(event)">
+			<section class="auth-modal-shell page-card" onclick="event.stopPropagation()">
+		<div class="auth-modal-top">
+			<div>
+				<p class="eyebrow">LinguaQuest</p>
+				<h2>@(AuthTab == "login" ? "Ласкаво просимо назад" : "Створи акаунт")</h2>
+				<p class="muted">@(AuthTab == "login" ? "Продовжуй прогрес з будь-якого пристрою." : "Почни з потрібної мови та рівня.")</p>
+			</div>
+			<button type="button" class="modal-close" onclick="hideAppAuthModal()">×</button>
+		</div>
+
+		<div class="auth-switcher">
+			<button type="button" class="switch-pill @(AuthTab == "login" ? "active" : "")" @onclick='() => AuthTab = "login"'>Вхід</button>
+			<button type="button" class="switch-pill @(AuthTab == "register" ? "active" : "")" @onclick='() => AuthTab = "register"'>Реєстрація</button>
+		</div>
+
+		@if (AuthTab == "login")
+		{
+			<form class="auth-modal-form" method="post" action="/auth/login">
+				<input type="hidden" name="returnUrl" value="/game" />
+				<label>
+					Логін або email
+					<input class="search-input" name="UserNameOrEmail" autocomplete="username" />
+				</label>
+				<label>
+					Пароль
+					<input class="search-input" type="password" name="Password" autocomplete="current-password" />
+				</label>
+				<button class="primary-button wide-button" type="submit">Увійти</button>
+			</form>
+		}
+		else
+		{
+			<form class="auth-modal-form" method="post" action="/auth/register">
+				<input type="hidden" name="returnUrl" value="/game" />
+				<label>
+					Логін
+					<input class="search-input" name="UserName" autocomplete="username" />
+				</label>
+				<label>
+					Ім’я для відображення
+					<input class="search-input" name="DisplayName" autocomplete="name" />
+				</label>
+				<label>
+					Email
+					<input class="search-input" type="email" name="Email" autocomplete="email" />
+				</label>
+				<label>
+					Пароль
+					<input class="search-input" type="password" name="Password" autocomplete="new-password" />
+				</label>
+				<label>
+					Підтверди пароль
+					<input class="search-input" type="password" name="ConfirmPassword" autocomplete="new-password" />
+				</label>
+				<div class="auth-grid-2">
+					<label>
+						Цільова мова
+						<select class="search-input" name="TargetLanguage">
+							<option value="English">Англійська</option>
+							<option value="German">Німецька</option>
+						</select>
+					</label>
+					<label>
+						Рівень
+						<select class="search-input" name="Level">
+							@foreach (var item in Enum.GetValues<LearningLevel>())
+							{
+								<option value="@item">@LearningLevelLabels.GetLabel(item)</option>
+							}
+						</select>
+					</label>
+				</div>
+				<button class="primary-button wide-button" type="submit">Створити акаунт</button>
+			</form>
+		}
+	</section>
+</div>
+
+@code {
+	private string AuthTab = "login";
+	private string CurrentTheme = "dark";
+	private string? UserId;
+
+	protected override async Task OnInitializedAsync()
+	{
+		UserId = await CurrentUserService.GetUserIdAsync();
+
+		if (!string.IsNullOrWhiteSpace(UserId))
+		{
+			var settings = await SettingsService.GetAsync(UserId);
+			CurrentTheme = string.IsNullOrWhiteSpace(settings.ThemePreference) ? "dark" : settings.ThemePreference;
+		}
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			await JS.InvokeVoidAsync("setTheme", CurrentTheme);
+		}
+	}
+
+	private async Task ToggleThemeAsync()
+	{
+		CurrentTheme = CurrentTheme == "dark" ? "light" : "dark";
+		await JS.InvokeVoidAsync("setTheme", CurrentTheme);
+
+		if (!string.IsNullOrWhiteSpace(UserId))
+		{
+			var settings = await SettingsService.GetAsync(UserId);
+			settings.ThemePreference = CurrentTheme;
+			await SettingsService.SaveAsync(settings);
+		}
+	}
+}

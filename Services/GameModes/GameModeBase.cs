@@ -67,15 +67,18 @@ public abstract class GameModeBase : IGameMode
             .Distinct()
             .ToList();
 
-        if (!options.Contains(requiredAnswer))
-        {
-            options.Insert(0, requiredAnswer);
-        }
+        options.RemoveAll(item => string.Equals(item, requiredAnswer, StringComparison.OrdinalIgnoreCase));
 
-        return options
-            .Distinct()
+        var shuffled = options
             .OrderBy(_ => Random.Shared.Next())
-            .Take(takeCount)
+            .Take(Math.Max(0, takeCount - 1))
+            .ToList();
+
+        shuffled.Add(requiredAnswer);
+
+        return shuffled
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(_ => Random.Shared.Next())
             .ToList();
     }
 
